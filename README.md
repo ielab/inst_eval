@@ -30,7 +30,7 @@ This will print the following:
 	  trec_qrel_file        TREC style qrel file.
 	  trec_results_file     TREC style results file.
 	  T_per_query           Tab separated file indicating value of T for each
-	                        query: QueryId T
+	                        query: QueryId<tab>T
 	
 	optional arguments:
 	  -h, --help            show this help message and exit
