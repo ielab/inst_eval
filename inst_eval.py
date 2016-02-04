@@ -86,12 +86,16 @@ def read_T_per_query(T_per_query_file):
     return Ts
 
 def find_max_graded_label(qrels):
+    '''
+    Determine from the qrels what the maximum graded relevance label is.
+    This will be used later bound turned graded labels to [0..1].
+    '''
     return max([rel for doc in qrels.values() for rel in doc.values()])
 
-def utilityOf(gainValue):
-    return 1.0
-
 def inst_algorithm(T, ranked_gains, n, defaultValue):
+    '''
+    Implementation of Algorithm 1 from Moffat et al, 2015.
+    '''
     score = 0.0
     N = int(2*pow(10,4) if T<=5 else 2*pow(10,5))
     maxN = max(n,N)
@@ -123,6 +127,10 @@ def inst_algorithm(T, ranked_gains, n, defaultValue):
 
 
 def calc_ranked_gains(ranked_list, qrels, max_graded_label):
+    '''
+    Using qrels, turns a ranked list into array of gains.
+    Note: unjudged documents are marked with gain of -1.0.
+    '''
     ranked_gains = []
     for (doc, rank, score, runid) in ranked_list:
         if doc in qrels:
@@ -132,6 +140,9 @@ def calc_ranked_gains(ranked_list, qrels, max_graded_label):
     return ranked_gains
 
 def print_stats(num_ret, num_rel, num_rel_ret, score_min, score_max, residual, qId='all', num_q=0):
+    '''
+    Print results in the same format as trec_eval.
+    '''
     if num_q > 0:
         print "num_q\t\t%s\t%d" % (qId, num_q )    
     print "num_ret\t\t%s\t%d" % (qId, num_ret )
@@ -142,19 +153,23 @@ def print_stats(num_ret, num_rel, num_rel_ret, score_min, score_max, residual, q
     print "inst_res\t%s\t%.4f" % (qId, residual)
 
 def inst_eval(results, qrels, Ts, n, max_graded_label):
+    '''
+    Main method that calls inst_algorithm for each query.
+    Accumulates and prints overall summary statistics.
+    '''
     totals = {}
 
     for qId in sorted(results):
         try:
             T = Ts[qId]
         except KeyError as ke:
-            logging.error("No T was found for query %s." % qId)
-            continue
+            logging.error("No T was found for query %s." % qId) # logs to stderr
+            continue # skip this query and continue
 
         try:
             ranked_gains = calc_ranked_gains(results[qId], qrels[qId], max_graded_label)
-            score_min = inst_algorithm(T, ranked_gains, n, 0.0)
-            score_max = inst_algorithm(T, ranked_gains, n, 1.0)
+            score_min = inst_algorithm(T, ranked_gains, n, 0.0) # assume unjudged are all not relevant
+            score_max = inst_algorithm(T, ranked_gains, n, 1.0) # assume unjudged are all relevant
             residual = score_max - score_min
 
             num_ret = len(results[qId])
@@ -171,8 +186,8 @@ def inst_eval(results, qrels, Ts, n, max_graded_label):
             totals['residual'] = totals.get('residual', 0.0) + residual
 
         except KeyError as e:
-            logging.error("No qrels were found for query %s." % qId)
-            continue
+            logging.error("No qrels were found for query %s." % qId) # logs to stderr
+            continue # skip this query and continue
     
     totals = dict([(stat, float(value)/len(results)) for (stat, value) in totals.items()])
     totals['num_q'] = len(results)
@@ -181,21 +196,23 @@ def inst_eval(results, qrels, Ts, n, max_graded_label):
         
 
 if __name__ == "__main__":
+    '''
+    Main method: collection command line args and call inst_eval.
+    '''
     arg_parser = argparse.ArgumentParser(description="Implementation of the INST evaluation measure from 'INST: An Adaptive Metric for Information Retrieval Evaluation', ACDS2015.")
     arg_parser.add_argument("trec_qrel_file", help="TREC style qrel file.")
     arg_parser.add_argument("trec_results_file", help="TREC style results file.")
-    arg_parser.add_argument("T_per_query", help="Tab separated file indicating value of T for each query: QueryId\tT")
+    arg_parser.add_argument("T_per_query", help="Tab separated file indicating value of T for each query: QueryId<tab>T")
     arg_parser.add_argument("-n", "--eval_depth", help="Max depth to evaluate at.", type=int, required=True)
     arg_parser.add_argument("-T", "--over_write_T", help="Set all T values to supplied constant.", type=int, required=False)
 
-
     args = arg_parser.parse_args()
-
     qrels = read_trec_qrels(args.trec_qrel_file)
     results = read_trec_results(args.trec_results_file)
     n = args.eval_depth
     Ts = read_T_per_query(args.T_per_query)
+
     if args.over_write_T:
-        Ts = dict(zip(results.keys(), [args.over_write_T]*len(results)))
+        Ts = dict(zip(results.keys(), [args.over_write_T]*len(results))) # overwrite Ts to the supplied constant value
 
     inst_eval(results, qrels, Ts, n, find_max_graded_label(qrels))
