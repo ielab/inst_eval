@@ -8,6 +8,8 @@ INST is an evaluation measure outlined in:
 
 A. Moffat, P. Bailey, F. Scholer, P. Thomas. *[INST: An Adaptive Metric for Information Retrieval Evaluation](http://dl.acm.org/citation.cfm?id=2838938)*. ADCS'15 Proceedings of the 20th Australasian Document Computing Symposium. Sydney, Australia, December 2015.
 
+We thanks Moffat and Bailey for providing an initial implementation of INST from which this code was developed.
+
 ### Setting up inst_eval.y
 
 inst_eval.py is run as a standalone program. It requires Python 2.7 to be installed.
