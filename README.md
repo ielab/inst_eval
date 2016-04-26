@@ -14,7 +14,7 @@ If you do use our inst_eval implementation then please include a citiation to ou
 
 B. Koopman and G. Zuccon. *A test collection for mathcing patient trials*. In Proceedings of the 39th annual international ACM SIGIR conference on research and development in information retrieval, Pisa, July 2016.
 
-### Setting up inst_eval.y
+### Setting up inst_eval.py
 
 inst_eval.py is run as a standalone program. It requires Python 2.7 to be installed.
 
