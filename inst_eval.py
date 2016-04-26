@@ -159,6 +159,7 @@ def inst_eval(results, qrels, Ts, max_graded_label):
     '''
     totals = {}
 
+    query_count = 0
     for qId in sorted(results):
         try:
             T = Ts[qId]
@@ -168,8 +169,8 @@ def inst_eval(results, qrels, Ts, max_graded_label):
 
         try:
             ranked_gains = calc_ranked_gains(results[qId], qrels[qId], max_graded_label)
-            score_min = inst_algorithm(T, ranked_gains, len(ranked_gains), 0.0) # assume unjudged are all not relevant
-            score_max = inst_algorithm(T, ranked_gains, len(ranked_gains), 1.0) # assume unjudged are all relevant
+            score_min = inst_algorithm(T, ranked_gains, len(qrels[qId]), 0.0) # assume unjudged are all not relevant
+            score_max = inst_algorithm(T, ranked_gains, len(qrels[qId]), 1.0) # assume unjudged are all relevant
             residual = score_max - score_min
 
             num_ret = len(results[qId])
@@ -185,13 +186,16 @@ def inst_eval(results, qrels, Ts, max_graded_label):
             totals['score_max'] = totals.get('score_max', 0.0) + score_max
             totals['residual'] = totals.get('residual', 0.0) + residual
 
+            query_count = query_count + 1
+
         except KeyError as e:
             logging.error("No qrels were found for query %s." % qId) # logs to stderr
             continue # skip this query and continue
-    
-    totals = dict([(stat, float(value)/len(results)) for (stat, value) in totals.items()])
-    totals['num_q'] = len(results)
-    print_stats(**totals)
+
+    if len(totals) > 0:    
+        totals = dict([(stat, float(value)/query_count) for (stat, value) in totals.items()])
+        totals['num_q'] = len(results)
+        print_stats(**totals)
 
         
 
