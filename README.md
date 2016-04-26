@@ -10,6 +10,10 @@ A. Moffat, P. Bailey, F. Scholer, P. Thomas. *[INST: An Adaptive Metric for Info
 
 We thanks Moffat and Bailey for providing an initial implementation of INST from which this code was developed.
 
+If you do use our inst_eval implementation then please include a citiation to our paper:
+
+B. Koopman and G. Zuccon. *A test collection for mathcing patient trials*. In Proceedings of the 39th annual international ACM SIGIR conference on research and development in information retrieval, Pisa, July 2016.
+
 ### Setting up inst_eval.y
 
 inst_eval.py is run as a standalone program. It requires Python 2.7 to be installed.
