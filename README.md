@@ -8,11 +8,11 @@ INST is an evaluation measure outlined in:
 
 A. Moffat, P. Bailey, F. Scholer, P. Thomas. *[INST: An Adaptive Metric for Information Retrieval Evaluation](http://dl.acm.org/citation.cfm?id=2838938)*. ADCS'15 Proceedings of the 20th Australasian Document Computing Symposium. Sydney, Australia, December 2015.
 
-We thanks Moffat and Bailey for providing an initial implementation of INST from which this code was developed.
+We thank Moffat and Bailey for providing an initial implementation of INST from which this code was developed.
 
 If you do use our inst_eval implementation then please include citiations to both the Moffat et al. paper and to our paper:
 
-B. Koopman and G. Zuccon. *A test collection for mathcing patient trials*. In Proceedings of the 39th annual international ACM SIGIR conference on research and development in information retrieval, Pisa, July 2016.
+B. Koopman and G. Zuccon. *A test collection for matching patient trials*. In Proceedings of the 39th annual international ACM SIGIR conference on research and development in information retrieval, Pisa, July 2016.
 
 ### Setting up inst_eval.py
 
