@@ -152,25 +152,40 @@ def print_stats(num_ret, num_rel, num_rel_ret, score_min, score_max, residual, q
     print "inst_max\t%s\t%.4f" % (qId, score_max)
     print "inst_res\t%s\t%.4f" % (qId, residual)
 
-def inst_eval(results, qrels, Ts, max_graded_label):
+def inst_eval(results, qrels, Ts, max_graded_label, complete_qrel_queries):
     '''
     Main method that calls inst_algorithm for each query.
     Accumulates and prints overall summary statistics.
     '''
     totals = {}
 
+    query_list = sorted(qrels) if complete_qrel_queries else sorted(results)
+
     query_count = 0
-    for qId in sorted(results):
+    for qId in query_list:
         try:
             T = Ts[qId]
         except KeyError as ke:
             logging.error("No T was found for query %s." % qId) # logs to stderr
             continue # skip this query and continue
 
-        try:
+        if qId not in qrels: # can't do anything if there are no qrels - skip this query
+            logging.error("No qrels were found for query %s." %  qId) # logs to stderr
+            continue
+
+        if qId in results or complete_qrel_queries: 
+
+            if qId not in results:
+                logging.warn("No results found for query %s", qId)
+                results[qId] = []
+
             ranked_gains = calc_ranked_gains(results[qId], qrels[qId], max_graded_label)
-            score_min = inst_algorithm(T, ranked_gains, len(qrels[qId]), 0.0) # assume unjudged are all not relevant
-            score_max = inst_algorithm(T, ranked_gains, len(qrels[qId]), 1.0) # assume unjudged are all relevant
+
+            # get the scores - assume score is 0.0000 if there are no results
+            score_min = inst_algorithm(T, ranked_gains, len(qrels[qId]), 0.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all not relevant
+            score_max = inst_algorithm(T, ranked_gains, len(qrels[qId]), 1.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all relevant
+            
+
             residual = score_max - score_min
 
             num_ret = len(results[qId])
@@ -188,8 +203,8 @@ def inst_eval(results, qrels, Ts, max_graded_label):
 
             query_count = query_count + 1
 
-        except KeyError as e:
-            logging.error("No qrels were found for query %s." % qId) # logs to stderr
+        else: # there are no retrieval results for this query:
+            logging.error("No results were found for query %s." %  qId) # logs to stderr
             continue # skip this query and continue
 
     if len(totals) > 0:    
@@ -208,16 +223,18 @@ if __name__ == "__main__":
     arg_parser.add_argument("trec_results_file", help="TREC style results file.")
     arg_parser.add_argument("T_per_query", help="Tab separated file indicating value of T for each query: QueryId<tab>T")
     arg_parser.add_argument("-T", "--over_write_T", help="Set all T values to supplied constant.", type=int, required=False)
+    arg_parser.add_argument("-c", "--complete_qrel_queries", help="Same as -c in trec_eval: Average over the complete set of queries in the relevance judgements instead of the queries in the intersection of relevance judgements and results.  Missing queries will contribute a value of 0 to all evaluation measures", action="store_true", default=False)
 
     args = arg_parser.parse_args()
     qrels = read_trec_qrels(args.trec_qrel_file)
     results = read_trec_results(args.trec_results_file)
     Ts = read_T_per_query(args.T_per_query)
+    complete_qrel_queries = args.complete_qrel_queries
 
     if args.over_write_T:
         Ts = dict(zip(results.keys(), [args.over_write_T]*len(results))) # overwrite Ts to the supplied constant value
 
-    inst_eval(results, qrels, Ts, find_max_graded_label(qrels))
+    inst_eval(results, qrels, Ts, find_max_graded_label(qrels), complete_qrel_queries)
 
 
 
