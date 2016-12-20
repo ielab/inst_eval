@@ -111,6 +111,8 @@ def inst_algorithm(T, ranked_gains, n, defaultValue):
 
         if i > n:
             r_i = defaultValue
+        elif i > len(ranked_gains):
+            r_i = defaultValue
         elif ranked_gains[i-1] == -1: # use -1.0 to indicate undefined values for items in the ranking
             r_i = defaultValue
         else:
