@@ -111,8 +111,6 @@ def inst_algorithm(T, ranked_gains, n, defaultValue):
 
         if i > n:
             r_i = defaultValue
-        elif i > len(ranked_gains):
-            r_i = defaultValue
         elif ranked_gains[i-1] == -1: # use -1.0 to indicate undefined values for items in the ranking
             r_i = defaultValue
         else:
@@ -184,8 +182,8 @@ def inst_eval(results, qrels, Ts, max_graded_label, complete_qrel_queries):
             ranked_gains = calc_ranked_gains(results[qId], qrels[qId], max_graded_label)
 
             # get the scores - assume score is 0.0000 if there are no results
-            score_min = inst_algorithm(T, ranked_gains, len(qrels[qId]), 0.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all not relevant
-            score_max = inst_algorithm(T, ranked_gains, len(qrels[qId]), 1.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all relevant
+            score_min = inst_algorithm(T, ranked_gains, len(results[qId]), 0.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all not relevant
+            score_max = inst_algorithm(T, ranked_gains, len(results[qId]), 1.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all relevant
             
 
             residual = score_max - score_min
