@@ -47,7 +47,7 @@ def read_trec_results(trec_results_file):
                 query, Q0, doc, rank, scoreStr, runid = line.strip().split()
                 trec_results[query] = trec_results.get(query, []) + [(doc, rank, float(scoreStr), runid)]
             except Exception as e:
-                print "Error: unable to split line in 6 parts", line
+                print ("Error: unable to split line in 6 parts", line)
                 raise e
     return trec_results
 
@@ -65,7 +65,7 @@ def read_trec_qrels(trec_qrel_file):
                 docs[doc] = float(relevance)
                 qrels[query] = docs
             except Exception as e:
-                print "Error: unable to split line in 4 parts", line
+                print ("Error: unable to split line in 4 parts", line)
                 raise e
     return qrels
 
@@ -81,7 +81,7 @@ def read_T_per_query(T_per_query_file):
                 query, T = line.strip().split()
                 Ts[query] = int(T)
             except Exception as e:
-                print "Error: unable to split line in 2 parts", line
+                print ("Error: unable to split line in 2 parts", line)
                 raise e
     return Ts
 
@@ -144,13 +144,13 @@ def print_stats(num_ret, num_rel, num_rel_ret, score_min, score_max, residual, q
     Print results in the same format as trec_eval.
     '''
     if num_q > 0:
-        print "num_q\t\t%s\t%d" % (qId, num_q )    
-    print "num_ret\t\t%s\t%d" % (qId, num_ret )
-    print "num_rel\t\t%s\t%d" % (qId, num_rel )
-    print "num_rel_ret\t%s\t%d" % (qId, num_rel_ret)
-    print "inst_min\t%s\t%.4f" % (qId, score_min)
-    print "inst_max\t%s\t%.4f" % (qId, score_max)
-    print "inst_res\t%s\t%.4f" % (qId, residual)
+        print ("num_q\t\t%s\t%d" % (qId, num_q )    )
+    print ("num_ret\t\t%s\t%d" % (qId, num_ret ))
+    print ("num_rel\t\t%s\t%d" % (qId, num_rel ))
+    print ("num_rel_ret\t%s\t%d" % (qId, num_rel_ret))
+    print ("inst_min\t%s\t%.4f" % (qId, score_min))
+    print ("inst_max\t%s\t%.4f" % (qId, score_max))
+    print ("inst_res\t%s\t%.4f" % (qId, residual))
 
 def inst_eval(results, qrels, Ts, max_graded_label, complete_qrel_queries):
     '''
