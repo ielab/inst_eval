@@ -37,12 +37,12 @@ This will print the following:
 	  trec_results_file     TREC style results file.
 	  
 	optional arguments:
-	  -h, --help            show this help message and exit
-	  -n EVAL_DEPTH, --eval_depth EVAL_DEPTH
+	  -h, --help         show this help message and exit
+	  -n   EVAL_DEPTH,   --eval_depth EVAL_DEPTH
 	                        Max depth to evaluate at.
-	  -T OVER_WRITE_T, --over_write_T OVER_WRITE_T
+	  -T   OVER_WRITE_T, --over_write_T OVER_WRITE_T
 	                        Set all T values to supplied constant.
-	  -tpq T_per_query, --T_per_query T_PER_QUERY
-	  				        Tab separated file indicating value of T for each
+	  -tpq T_per_query,  --T_per_query T_PER_QUERY
+	  		        Tab separated file indicating value of T for each
 	                        query: QueryId<tab>T
 
