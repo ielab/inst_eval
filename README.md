@@ -45,4 +45,7 @@ This will print the following:
 	  -tpq T_per_query,  --T_per_query T_PER_QUERY
 	  		        Tab separated file indicating value of T for each
 	                        query: QueryId<tab>T
+	  -q   per_query,    --per_query PER_QUERY
+	                        Switch to print out per query result or aggregated result
+	                        default False
 
