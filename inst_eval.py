@@ -152,7 +152,7 @@ def print_stats(num_ret, num_rel, num_rel_ret, score_min, score_max, residual, q
     print ("inst_max\t%s\t%.4f" % (qId, score_max))
     print ("inst_res\t%s\t%.4f" % (qId, residual))
 
-def inst_eval(results, qrels, Ts, max_graded_label, complete_qrel_queries, eval_depth):
+def inst_eval(results, qrels, Ts, max_graded_label, complete_qrel_queries, eval_depth, per_query_result):
     '''
     Main method that calls inst_algorithm for each query.
     Accumulates and prints overall summary statistics.
@@ -197,7 +197,8 @@ def inst_eval(results, qrels, Ts, max_graded_label, complete_qrel_queries, eval_
             num_rel = len([rel for rel in qrels[qId].values() if rel > 0.0])
             num_rel_ret = len([g for g in ranked_gains if g > 0.0])
 
-            print_stats(num_ret, num_rel, num_rel_ret, score_min, score_max, residual, qId)
+            if per_query_result:
+                print_stats(num_ret, num_rel, num_rel_ret, score_min, score_max, residual, qId)
 
             totals['num_ret'] = totals.get('num_ret', 0.0) + num_ret
             totals['num_rel'] = totals.get('num_rel', 0.0) + num_rel
@@ -230,6 +231,8 @@ if __name__ == "__main__":
     arg_parser.add_argument("-T", "--over_write_T", help="Set all T values to supplied constant.", type=int, required=False)
     arg_parser.add_argument("-c", "--complete_qrel_queries", help="Same as -c in trec_eval: Average over the complete set of queries in the relevance judgements instead of the queries in the intersection of relevance judgements and results.  Missing queries will contribute a value of 0 to all evaluation measures", action="store_true", default=False)
     arg_parser.add_argument("-n", "--eval_depth", help="EVAL_DEPTH: Max depth to evaluate at", type=int, required=False)
+    arg_parser.add_argument("-q", "--per_query", help="Print out per query evaluation result", action="store_true", default=False)
+
 
     args = arg_parser.parse_args()
     qrels = read_trec_qrels(args.trec_qrel_file)
@@ -242,5 +245,6 @@ if __name__ == "__main__":
         logging.error("No T_per_query file or over_write_T found!")
     complete_qrel_queries = args.complete_qrel_queries
     eval_depth = args.eval_depth
+    per_query_result = args.per_query
 
-    inst_eval(results, qrels, Ts, find_max_graded_label(qrels), complete_qrel_queries, eval_depth)
+    inst_eval(results, qrels, Ts, find_max_graded_label(qrels), complete_qrel_queries, eval_depth, per_query_result)
