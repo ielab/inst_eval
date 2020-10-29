@@ -152,7 +152,7 @@ def print_stats(num_ret, num_rel, num_rel_ret, score_min, score_max, residual, q
     print ("inst_max\t%s\t%.4f" % (qId, score_max))
     print ("inst_res\t%s\t%.4f" % (qId, residual))
 
-def inst_eval(results, qrels, Ts, max_graded_label, complete_qrel_queries):
+def inst_eval(results, qrels, Ts, max_graded_label, complete_qrel_queries, eval_depth):
     '''
     Main method that calls inst_algorithm for each query.
     Accumulates and prints overall summary statistics.
@@ -181,9 +181,14 @@ def inst_eval(results, qrels, Ts, max_graded_label, complete_qrel_queries):
 
             ranked_gains = calc_ranked_gains(results[qId], qrels[qId], max_graded_label)
 
+            # check if eval_depth is set, if set use eval_depth passed in, otherwise use len(results[qId])
+
+            if eval_depth is None:
+                eval_depth = len(results[qId])
+
             # get the scores - assume score is 0.0000 if there are no results
-            score_min = inst_algorithm(T, ranked_gains, len(results[qId]), 0.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all not relevant
-            score_max = inst_algorithm(T, ranked_gains, len(results[qId]), 1.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all relevant
+            score_min = inst_algorithm(T, ranked_gains, eval_depth, 0.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all not relevant
+            score_max = inst_algorithm(T, ranked_gains, eval_depth, 1.0) if len(ranked_gains) > 0 else 0.000 # assume unjudged are all relevant
             
 
             residual = score_max - score_min
@@ -221,22 +226,21 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(description="Implementation of the INST evaluation measure from 'INST: An Adaptive Metric for Information Retrieval Evaluation', ACDS2015.")
     arg_parser.add_argument("trec_qrel_file", help="TREC style qrel file.")
     arg_parser.add_argument("trec_results_file", help="TREC style results file.")
-    arg_parser.add_argument("T_per_query", help="Tab separated file indicating value of T for each query: QueryId<tab>T")
+    arg_parser.add_argument("-tpq", "--T_per_query", help="Tab separated file indicating value of T for each query: QueryId<tab>T", required=False)
     arg_parser.add_argument("-T", "--over_write_T", help="Set all T values to supplied constant.", type=int, required=False)
     arg_parser.add_argument("-c", "--complete_qrel_queries", help="Same as -c in trec_eval: Average over the complete set of queries in the relevance judgements instead of the queries in the intersection of relevance judgements and results.  Missing queries will contribute a value of 0 to all evaluation measures", action="store_true", default=False)
+    arg_parser.add_argument("-n", "--eval_depth", help="EVAL_DEPTH: Max depth to evaluate at", type=int, required=False)
 
     args = arg_parser.parse_args()
     qrels = read_trec_qrels(args.trec_qrel_file)
     results = read_trec_results(args.trec_results_file)
-    Ts = read_T_per_query(args.T_per_query)
-    complete_qrel_queries = args.complete_qrel_queries
-
-    if args.over_write_T:
+    if args.T_per_query is not None:
+        Ts = read_T_per_query(args.T_per_query)
+    elif args.over_write_T:
         Ts = dict(zip(results.keys(), [args.over_write_T]*len(results))) # overwrite Ts to the supplied constant value
+    else:
+        logging.error("No T_per_query file or over_write_T found!")
+    complete_qrel_queries = args.complete_qrel_queries
+    eval_depth = args.eval_depth
 
-    inst_eval(results, qrels, Ts, find_max_graded_label(qrels), complete_qrel_queries)
-
-
-
-
-
+    inst_eval(results, qrels, Ts, find_max_graded_label(qrels), complete_qrel_queries, eval_depth)
