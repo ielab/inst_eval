@@ -12,7 +12,7 @@ We thank Moffat and Bailey for providing an initial implementation of INST from 
 
 If you do use our inst_eval implementation then please include citiations to both the Moffat et al. paper and to our paper:
 
-B. Koopman and G. Zuccon. *A test collection for matching patient trials*. In Proceedings of the 39th annual international ACM SIGIR conference on research and development in information retrieval, Pisa, July 2016.
+B. Koopman and G. Zuccon. *[A test collection for matching patient trials](https://dl.acm.org/doi/abs/10.1145/2911451.2914672?casa_token=5NSRpXeP31IAAAAA:q6gcCDnYXDm2GVf0MuDTqvZiVZqsk2h8Rnq8tEV-6-fZqXkpWILZFCIvugXKrdRM2-E-ToKg4Vtz6w)*. In Proceedings of the 39th annual international ACM SIGIR conference on research and development in information retrieval, Pisa, July 2016.
 
 ### Setting up inst_eval.py
 
