@@ -11,22 +11,27 @@ http://dl.acm.org/citation.cfm?id=2838938
     organization={ACM--Association for Computing Machinery$\}$}
 }
 
-usage: inst_eval.py [-h] -n EVAL_DEPTH [-T OVER_WRITE_T]
-                    trec_qrel_file trec_results_file T_per_query
+usage: inst_eval.py [-h] [-c] [-n EVAL_DEPTH] [-q] (-tpq T_PER_QUERY | -T OVER_WRITE_T)
+                    trec_qrel_file trec_results_file
 
-Implementation of the INST evaluation measure from 'INST: An Adaptive Metric
-for Information Retrieval Evaluation', ACDS2015.
+Implementation of the INST evaluation measure from 'INST: An Adaptive Metric for Information Retrieval Evaluation',
+ACDS2015.
 
 positional arguments:
   trec_qrel_file        TREC style qrel file.
   trec_results_file     TREC style results file.
-  T_per_query           Tab separated file indicating value of T for each
-                        query: QueryId T
 
 optional arguments:
   -h, --help            show this help message and exit
+  -c, --complete_qrel_queries
+                        Same as -c in trec_eval: Average over the complete set of queries in the relevance judgements
+                        instead of the queries in the intersection of relevance judgements and results. Missing
+                        queries will contribute a value of 0 to all evaluation measures
   -n EVAL_DEPTH, --eval_depth EVAL_DEPTH
-                        Max depth to evaluate at.
+                        EVAL_DEPTH: Max depth to evaluate at
+  -q, --per_query       Print out per query evaluation result
+  -tpq T_PER_QUERY, --T_per_query T_PER_QUERY
+                        Tab separated file indicating value of T for each query: QueryId<tab>T
   -T OVER_WRITE_T, --over_write_T OVER_WRITE_T
                         Set all T values to supplied constant.
 '''
@@ -227,11 +232,13 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(description="Implementation of the INST evaluation measure from 'INST: An Adaptive Metric for Information Retrieval Evaluation', ACDS2015.")
     arg_parser.add_argument("trec_qrel_file", help="TREC style qrel file.")
     arg_parser.add_argument("trec_results_file", help="TREC style results file.")
-    arg_parser.add_argument("-tpq", "--T_per_query", help="Tab separated file indicating value of T for each query: QueryId<tab>T", required=False)
-    arg_parser.add_argument("-T", "--over_write_T", help="Set all T values to supplied constant.", type=int, required=False)
     arg_parser.add_argument("-c", "--complete_qrel_queries", help="Same as -c in trec_eval: Average over the complete set of queries in the relevance judgements instead of the queries in the intersection of relevance judgements and results.  Missing queries will contribute a value of 0 to all evaluation measures", action="store_true", default=False)
     arg_parser.add_argument("-n", "--eval_depth", help="EVAL_DEPTH: Max depth to evaluate at", type=int, required=False)
     arg_parser.add_argument("-q", "--per_query", help="Print out per query evaluation result", action="store_true", default=False)
+
+    Ts_arg_group = arg_parser.add_mutually_exclusive_group(required=True)
+    Ts_arg_group.add_argument("-tpq", "--T_per_query", help="Tab separated file indicating value of T for each query: QueryId<tab>T")
+    Ts_arg_group.add_argument("-T", "--over_write_T", help="Set all T values to supplied constant.", type=int)
 
 
     args = arg_parser.parse_args()

@@ -26,26 +26,27 @@ For usage information run:
 
 This will print the following:
 
-	usage: inst_eval.py [-h] -n EVAL_DEPTH [-T OVER_WRITE_T]
-	                    trec_qrel_file trec_results_file T_per_query
+	usage: inst_eval.py [-h] [-c] [-n EVAL_DEPTH] [-q] (-tpq T_PER_QUERY | -T OVER_WRITE_T)
+	                    trec_qrel_file trec_results_file
 	
-	Implementation of the INST evaluation measure from 'INST: An Adaptive Metric
-	for Information Retrieval Evaluation', ACDS2015.
+	Implementation of the INST evaluation measure from 'INST: An Adaptive Metric for Information Retrieval Evaluation',
+	ACDS2015.
 	
 	positional arguments:
 	  trec_qrel_file        TREC style qrel file.
 	  trec_results_file     TREC style results file.
-	  
+	
 	optional arguments:
-	  -h, --help         show this help message and exit
-	  -n   EVAL_DEPTH,   --eval_depth EVAL_DEPTH
-	                        Max depth to evaluate at.
-	  -T   OVER_WRITE_T, --over_write_T OVER_WRITE_T
+	  -h, --help            show this help message and exit
+	  -c, --complete_qrel_queries
+	                        Same as -c in trec_eval: Average over the complete set of queries in the relevance judgements
+	                        instead of the queries in the intersection of relevance judgements and results. Missing
+	                        queries will contribute a value of 0 to all evaluation measures
+	  -n EVAL_DEPTH, --eval_depth EVAL_DEPTH
+	                        EVAL_DEPTH: Max depth to evaluate at
+	  -q, --per_query       Print out per query evaluation result
+	  -tpq T_PER_QUERY, --T_per_query T_PER_QUERY
+	                        Tab separated file indicating value of T for each query: QueryId<tab>T
+	  -T OVER_WRITE_T, --over_write_T OVER_WRITE_T
 	                        Set all T values to supplied constant.
-	  -tpq T_per_query,  --T_per_query T_PER_QUERY
-	  		        Tab separated file indicating value of T for each
-	                        query: QueryId<tab>T
-	  -q   per_query,    --per_query PER_QUERY
-	                        Switch to print out per query result or aggregated result
-	                        default False
 
